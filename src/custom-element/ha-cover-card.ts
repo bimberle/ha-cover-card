@@ -20,6 +20,8 @@ export class HaCoverCard extends LitElement {
     @property({ attribute: false })
     private entityObj: any;
 
+    private _hass: any;
+
     private entity: string = "";
 
     @property() private _config?: ICardConfig;
@@ -43,6 +45,7 @@ export class HaCoverCard extends LitElement {
 
         this.state = hass.states[this.entity].state;
         this.entityObj = hass.states[this.entity];
+        this._hass = hass;
     }
 
     /**
@@ -59,33 +62,56 @@ export class HaCoverCard extends LitElement {
      */
     render(): TemplateResult {
         return html`
-        <ha-card>
-            <div class="card-header">
-                <div class="truncate">
-                    ${this.cardTitle}
+            <div class="entity-row">
+                <state-badge .stateObj="${this.entityObj}"></state-badge>
+                <div class="name truncate">
+                    ${this.entityObj.attributes.friendly_name}
+                    <div class="secondary">${this.invertPercentage(this.entityObj.attributes.current_position)}% 
+                    / ${this.invertPercentage(this.entityObj.attributes.current_tilt_position)}%</div>
                 </div>
-            </div>
-            <div class="card-content">
-                <div>
-                    <div class="entity-row">
-                        <div class="icon">
-                            <ha-icon
-                                style="color: yellow"
-                                icon="mdi:lightbulb"
-                            ></ha-icon>
-                        </div>
-                        <div class="name truncate">
-                            Entity name
-                            <div class="secondary">Secondary info</div>
-                        </div>
-                        <div class="state">
-                            ${this.state}
-                        </div>
-                    <div>
+                <div class="state">
+                    <ha-icon @click=${() => this.setTilt()} class="clickIcon" icon="mdi:cached"></ha-icon>
+                    <ha-icon @click=${() =>this.setPositionAndTilt(0,50)} class="clickIcon" icon="mdi:reorder-horizontal"></ha-icon>
+                    <div class="updown">
+                    <ha-icon @click=${() =>this.closeCover()} class="clickIcon" icon="mdi:chevron-down"></ha-icon>
+                    <ha-icon @click=${() =>this.stopCover()} class="clickIcon" icon="mdi:pause"></ha-icon>
+                    <ha-icon @click=${() =>this.openCover()} class="clickIcon" icon="mdi:chevron-up"></ha-icon>
+                    </div>
                 </div>
-            </div>
-        </ha-card>
+            <div>
         `;
+    }
+
+
+    private setPositionAndTilt(posvalue: number, tiltvalue: number) {
+        this._hass.callService("cover","set_cover_position",{entity_id:this.entityObj.entity_id, position:posvalue});
+        this._hass.callService("cover","set_cover_tilt_position",{entity_id:this.entityObj.entity_id, tilt_position:tiltvalue});
+    }
+
+    private stopCover() {
+        this._hass.callService("cover","stop_cover",{entity_id:this.entityObj.entity_id});
+    }
+
+    private closeCover() {
+        this._hass.callService("cover","close_cover",{entity_id:this.entityObj.entity_id});
+    }
+
+    private openCover() {
+        console.log(this._hass);
+        this._hass.callService("cover","open_cover",{entity_id:this.entityObj.entity_id});
+    }
+
+    private setTilt() {
+        // Invert Position
+        var nextTilt = this.entityObj.attributes.current_tilt_position + 25;
+        if(nextTilt > 100) {
+            nextTilt = 0;
+        }
+        this._hass.callService("cover","set_cover_tilt_position",{entity_id:this.entityObj.entity_id,tilt_position:nextTilt});
+    }
+
+    private invertPercentage(perc: number) {
+        return 100-perc;
     }
 
     protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -100,9 +126,9 @@ export class HaCoverCard extends LitElement {
         super.updated(changedProps);
     
         if (changedProps.has("hass")) {
-            const stateObj = this.hass!.states[this._config!.entity];
+            const entityObj = this.hass!.states[this._config!.entity];
             const oldHass = changedProps.get("hass") as this["hass"];
-            const oldStateObj = oldHass
+            const oldentityObj = oldHass
             ? oldHass.states[this._config!.entity]
             : undefined;
     

@@ -1,9 +1,9 @@
-import { MyCustomCard } from "../src/custom-element/my-custom-card";
+import { HaCoverCard } from "../src/custom-element/ha-cover-card";
 import { ICardConfig } from "../src/types";
 
 describe("Basic tests", () => {
 
-    const cardTagName = "my-custom-card";
+    const cardTagName = "ha-cover-card";
 
     afterEach(() => 
         Array
@@ -45,7 +45,7 @@ describe("Basic tests", () => {
     });
 
     const createCard = async (config: ICardConfig) => {
-        const myCard = <MyCustomCard>document.createElement(cardTagName);
+        const myCard = <HaCoverCard>document.createElement(cardTagName);
         myCard.setConfig(config);
         document.body.appendChild(myCard);
 

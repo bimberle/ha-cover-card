@@ -4,19 +4,6 @@
     overflow: hidden;
 }
 
-.card-content > div {
-    margin-bottom: 8px;
-}
-.card-content > div:last-child {
-    margin-bottom: 0;
-}
-
-.entity-spacing:first-child {
-    margin-top: 0;
-}
-.entity-spacing:last-child {
-    margin-bottom: 0;
-}
 
 .entity-row {
     display: flex;
@@ -36,15 +23,12 @@
     line-height: 40px;
     margin-right: 10px;
 }
-.gallery {
+.state {
     display: flex;
-    flex-direction: column;
 }
-
-.previews {
-    width: 300px;
+.clickIcon {
+    cursor: pointer;
 }
-
-.smallTabs {
-    height: 20px;
+.updown {
+    padding-left: 10px;
 }

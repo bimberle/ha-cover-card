@@ -62,7 +62,7 @@
      * SPDX-License-Identifier: BSD-3-Clause
      */var n;null!=(null===(n=window.HTMLSlotElement)||void 0===n?void 0:n.prototype.assignedElements)?(o,n)=>o.assignedElements(n):(o,n)=>o.assignedNodes(n).filter((o=>o.nodeType===Node.ELEMENT_NODE));
 
-    var styles = ".truncate{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}.card-content > div{margin-bottom:8px;}.card-content > div:last-child{margin-bottom:0;}.entity-spacing:first-child{margin-top:0;}.entity-spacing:last-child{margin-bottom:0;}.entity-row{display:flex;align-items:center;}.entity-row .name{flex:1;margin:0 6px;}.entity-row .secondary{color:var(--primary-color);}.entity-row .icon{flex:0 0 40px;border-radius:50%;text-align:center;line-height:40px;margin-right:10px;}.gallery{display:flex;flex-direction:column;}.previews{width:300px;}.smallTabs{height:20px;}";
+    var styles = ".truncate{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}.entity-row{display:flex;align-items:center;}.entity-row .name{flex:1;margin:0 6px;}.entity-row .secondary{color:var(--primary-color);}.entity-row .icon{flex:0 0 40px;border-radius:50%;text-align:center;line-height:40px;margin-right:10px;}.state{display:flex;}.clickIcon{cursor:pointer;}.updown{padding-left:10px;}";
 
     // Check if config or Entity changed
     function hasConfigOrEntityChanged(element, changedProps) {
@@ -80,54 +80,12 @@
     /**
      * Main card class definition
      */
-    class MyCustomCard extends s {
+    class HaCoverCard extends s {
         constructor() {
             super(...arguments);
             this.cardTitle = "Card header";
             this.state = "";
             this.entity = "";
-            this.selectedTab = 0;
-            this.selectedDay = "";
-            this.selectedHour = "";
-            this.selectedCam = "";
-            this.selectedPic = "";
-            this.entityObj = undefined;
-            this.gallery = undefined;
-            this.localpath = "";
-            this.localpathReplace = "config/www";
-            this.availablePics = [];
-        }
-        _loadDays() {
-            this.availableDays = Object.keys(this.gallery);
-            this._selectDay(this.availableDays[0]);
-        }
-        _selectDay(tag) {
-            if (tag != '' && this.gallery) {
-                this.selectedDay = tag;
-                this.availableHours = Object.keys(this.gallery[this.selectedDay]);
-                this._selectHour(this.availableHours[0]);
-            }
-        }
-        _selectHour(hour) {
-            this.selectedHour = hour;
-            this.availableCams = Object.keys(this.gallery[this.selectedDay][this.selectedHour]);
-            this._selectCam(this.availableCams[0]);
-        }
-        _selectCam(cam) {
-            this.selectedCam = cam;
-            //this.availablePics = [];
-            Object.entries(this.gallery[this.selectedDay][this.selectedHour][this.selectedCam]).forEach((thisobj, index) => {
-                var picurl = this.localpath + thisobj[1];
-                this.availablePics.push({ timestamp: thisobj[0], url: picurl });
-            });
-            // TODO
-            // this.availablePics kommt nicht bei HTML an, dort ist das Object noch alt
-            if (this.availablePics.length > 0)
-                this._selectPic(this.availablePics[0]);
-        }
-        _selectPic(pic) {
-            this.selectedPic = pic.timestamp;
-            //console.log(pic);
         }
         /**
          * CSS for the card
@@ -144,7 +102,7 @@
             }
             this.state = hass.states[this.entity].state;
             this.entityObj = hass.states[this.entity];
-            this.localpath = this.entityObj.attributes.path.replace(this.localpathReplace, 'local');
+            this._hass = hass;
         }
         /**
          * Called every time when entity config is updated
@@ -153,70 +111,55 @@
         setConfig(config) {
             this.entity = config.entity;
             this.cardTitle = config.title || this.cardTitle;
-            this.praefixes = config.praefixes;
         }
         /**
          * Renders the card when the update is requested (when any of the properties are changed)
          */
         render() {
-            var _a, _b, _c;
-            this.gallery = this.entityObj.attributes.fileList;
-            //var locations: Array<PictureGallery> = JSON.parse(this.gallery);
-            if (this.gallery) {
-                this._loadDays();
-                return $ `
-                <ha-card>
-                    <div class="card-header">
-                        <div class="truncate">
-                            ${this.cardTitle}
-                        </div>
+            return $ `
+            <div class="entity-row">
+                <state-badge .stateObj="${this.entityObj}"></state-badge>
+                <div class="name truncate">
+                    ${this.entityObj.attributes.friendly_name}
+                    <div class="secondary">${this.invertPercentage(this.entityObj.attributes.current_position)}% 
+                    / ${this.invertPercentage(this.entityObj.attributes.current_tilt_position)}%</div>
+                </div>
+                <div class="state">
+                    <ha-icon @click=${() => this.setTilt()} class="clickIcon" icon="mdi:cached"></ha-icon>
+                    <ha-icon @click=${() => this.setPositionAndTilt(0, 50)} class="clickIcon" icon="mdi:reorder-horizontal"></ha-icon>
+                    <div class="updown">
+                    <ha-icon @click=${() => this.closeCover()} class="clickIcon" icon="mdi:chevron-down"></ha-icon>
+                    <ha-icon @click=${() => this.stopCover()} class="clickIcon" icon="mdi:pause"></ha-icon>
+                    <ha-icon @click=${() => this.openCover()} class="clickIcon" icon="mdi:chevron-up"></ha-icon>
                     </div>
-                    <div class="card-content">
-            
-                        <div id='days'>
-                            <paper-tabs scrollable class='smallTabs'>
-                            ${(_a = this.availableDays) === null || _a === void 0 ? void 0 : _a.map((tag) => {
-                return $ `
-                                <paper-tab @click=${() => this._selectDay(tag)}>${tag}</paper-tab>
-                                `;
-            })}
-                            </paper-tabs>
-                        </div>
-
-                        <div id='hours'>
-                            <paper-tabs scrollable class='smallTabs'>
-                                ${(_b = this.availableHours) === null || _b === void 0 ? void 0 : _b.map((hour) => {
-                return $ `
-                                        <paper-tab @click=${() => this._selectHour(hour)}>${hour}</paper-tab>
-                                        `;
-            })}
-                            </paper-tabs>
-                        </div>
-
-                        <div id='cams'>
-                            <paper-tabs scrollable class='smallTabs'>
-                                ${(_c = this.availableCams) === null || _c === void 0 ? void 0 : _c.map((cam) => {
-                return $ `
-                                        <paper-tab @click=${() => this._selectCam(cam)}>${cam}</paper-tab>
-                                        `;
-            })}
-                            </paper-tabs>
-                        </div>
-
-                        <div id='pics'>
-                                ${this.availablePics.map((pic) => {
-                return $ `<div class='previews'><img src=${pic.url} class='previews'></img><div class='previewtimestamp'>${pic.timestamp}</div></div>`;
-            })}
-                            
-                        </div>
-                    </div>
-
-                </ha-card>
-                `;
+                </div>
+            <div>
+        `;
+        }
+        setPositionAndTilt(posvalue, tiltvalue) {
+            this._hass.callService("cover", "set_cover_position", { entity_id: this.entityObj.entity_id, position: posvalue });
+            this._hass.callService("cover", "set_cover_tilt_position", { entity_id: this.entityObj.entity_id, tilt_position: tiltvalue });
+        }
+        stopCover() {
+            this._hass.callService("cover", "stop_cover", { entity_id: this.entityObj.entity_id });
+        }
+        closeCover() {
+            this._hass.callService("cover", "close_cover", { entity_id: this.entityObj.entity_id });
+        }
+        openCover() {
+            console.log(this._hass);
+            this._hass.callService("cover", "open_cover", { entity_id: this.entityObj.entity_id });
+        }
+        setTilt() {
+            // Invert Position
+            var nextTilt = this.entityObj.attributes.current_tilt_position + 25;
+            if (nextTilt > 100) {
+                nextTilt = 0;
             }
-            else {
-                return $ `<div>Loading...</div>`;
-            }
+            this._hass.callService("cover", "set_cover_tilt_position", { entity_id: this.entityObj.entity_id, tilt_position: nextTilt });
+        }
+        invertPercentage(perc) {
+            return 100 - perc;
         }
         shouldUpdate(changedProps) {
             if (changedProps.has("fileList")) {
@@ -237,49 +180,22 @@
     }
     __decorate([
         e({ attribute: false })
-    ], MyCustomCard.prototype, "cardTitle", void 0);
+    ], HaCoverCard.prototype, "cardTitle", void 0);
     __decorate([
         e({ attribute: false })
-    ], MyCustomCard.prototype, "state", void 0);
+    ], HaCoverCard.prototype, "state", void 0);
     __decorate([
         e({ attribute: false })
-    ], MyCustomCard.prototype, "praefixes", void 0);
+    ], HaCoverCard.prototype, "entityObj", void 0);
     __decorate([
         e()
-    ], MyCustomCard.prototype, "_config", void 0);
-    __decorate([
-        e({ type: Number })
-    ], MyCustomCard.prototype, "selectedTab", void 0);
-    __decorate([
-        e({ type: String })
-    ], MyCustomCard.prototype, "selectedDay", void 0);
-    __decorate([
-        e({ type: String })
-    ], MyCustomCard.prototype, "selectedHour", void 0);
-    __decorate([
-        e({ type: String })
-    ], MyCustomCard.prototype, "selectedCam", void 0);
-    __decorate([
-        e({ type: String })
-    ], MyCustomCard.prototype, "selectedPic", void 0);
-    __decorate([
-        e({ type: Array })
-    ], MyCustomCard.prototype, "availableDays", void 0);
-    __decorate([
-        e({ type: Array })
-    ], MyCustomCard.prototype, "availableHours", void 0);
-    __decorate([
-        e({ type: Array })
-    ], MyCustomCard.prototype, "availableCams", void 0);
-    __decorate([
-        e({ type: Array })
-    ], MyCustomCard.prototype, "availablePics", void 0);
+    ], HaCoverCard.prototype, "_config", void 0);
 
-    const printVersion = () => console.info("%c MY CUSTOM CARD %c 0.1.0", "color: white; background: gray; font-weight: 700;", "color: gray; background: white; font-weight: 700;");
+    const printVersion = () => console.info("%c MY CUSTOM CARD %c 1.0.0", "color: white; background: gray; font-weight: 700;", "color: gray; background: white; font-weight: 700;");
 
     // Registering card
-    customElements.define("my-custom-card", MyCustomCard);
+    customElements.define("ha-cover-card", HaCoverCard);
     printVersion();
 
 })();
-//# sourceMappingURL=my-custom-card.js.map
+//# sourceMappingURL=ha-cover-card.js.map

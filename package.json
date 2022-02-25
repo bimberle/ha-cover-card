@@ -1,6 +1,6 @@
 {
   "name": "ha-cover-card",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "HA Cover Card",
   "main": "dist/ha-cover-card.js",
   "scripts": {
@@ -36,7 +36,7 @@
     ],
     "verbose": false,
     "setupFilesAfterEnv": [
-      "<rootDir>/dist/my-custom-card.js"
+      "<rootDir>/dist/ha-cover-card.js"
     ],
     "globals": {
       "ts-jest": {
