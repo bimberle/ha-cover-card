@@ -97,7 +97,6 @@ export class HaCoverCard extends LitElement {
     }
 
     private openCover() {
-        console.log(this._hass);
         this._hass.callService("cover","open_cover",{entity_id:this.entityObj.entity_id});
     }
 

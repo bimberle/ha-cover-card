@@ -147,7 +147,6 @@
             this._hass.callService("cover", "close_cover", { entity_id: this.entityObj.entity_id });
         }
         openCover() {
-            console.log(this._hass);
             this._hass.callService("cover", "open_cover", { entity_id: this.entityObj.entity_id });
         }
         setTilt() {
