@@ -1,7 +1,6 @@
 import { HomeAssistant } from "../ha-types";
 import { html, css, LitElement, CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { property } from "lit/decorators";
-import {repeat} from 'lit-html/directives/repeat.js';
 import { ICardConfig } from "../types";
 import styles from "./card.css";
 import { hasConfigOrEntityChanged } from "../has-changed";
