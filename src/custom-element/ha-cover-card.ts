@@ -22,6 +22,11 @@ export class HaCoverCard extends LitElement {
     private _hass: any;
 
     private entity: string = "";
+    private currentTilt: number = 0;
+    private addSteps: boolean = true;
+
+    @property({ attribute: false })
+    private steps: number = 10;
 
     @property() private _config?: ICardConfig;
 
@@ -43,7 +48,10 @@ export class HaCoverCard extends LitElement {
         }
 
         this.state = hass.states[this.entity].state;
+        
         this.entityObj = hass.states[this.entity];
+
+        this.currentTilt = this.invertPercentage(this.entityObj.attributes.current_tilt_position);
         this._hass = hass;
     }
 
@@ -54,6 +62,8 @@ export class HaCoverCard extends LitElement {
     setConfig(config: ICardConfig): void {
         this.entity = config.entity;
         this.cardTitle = config.title || this.cardTitle;
+        if(config.steps)
+            this.steps = config.steps;
     }
 
     /**
@@ -101,10 +111,18 @@ export class HaCoverCard extends LitElement {
 
     private setTilt() {
         // Invert Position
-        var nextTilt = this.entityObj.attributes.current_tilt_position + 25;
-        if(nextTilt > 100) {
-            nextTilt = 0;
-        }
+        var nextTilt = 0;
+        if(this.currentTilt = 100)
+            this.addSteps = false;
+
+        if(this.currentTilt = 0)
+            this.addSteps = true;
+
+        if(this.addSteps)
+            nextTilt = this.currentTilt + this.steps;
+        else
+            nextTilt = this.currentTilt - this.steps;
+
         this._hass.callService("cover","set_cover_tilt_position",{entity_id:this.entityObj.entity_id,tilt_position:nextTilt});
     }
 

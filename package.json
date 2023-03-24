@@ -1,6 +1,6 @@
 {
   "name": "ha-cover-card",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "HA Cover Card",
   "main": "dist/ha-cover-card.js",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/maxwroc/lovelace-card-boilerplate.git"
+    "url": "https://github.com/bimberle/ha-cover-card.git"
   },
   "keywords": [
     "lovelace",
@@ -24,9 +24,9 @@
   "author": "Max Chodorowski",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/maxwroc/lovelace-card-boilerplate/issues"
+    "url": "https://github.com/bimberle/ha-cover-card/issues"
   },
-  "homepage": "https://github.com/maxwroc/lovelace-card-boilerplate#readme",
+  "homepage": "https://github.com/bimberle/ha-cover-card#readme",
   "jest": {
     "preset": "ts-jest",
     "runner": "jest-electron/runner",
