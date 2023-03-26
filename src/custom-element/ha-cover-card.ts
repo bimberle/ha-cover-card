@@ -55,11 +55,10 @@ export class HaCoverCard extends LitElement {
         
         this.entityObj = hass.states[this.entity];
         
-
+        this.currentTilt = 0;
         if(this.entityObj.attributes.current_tilt_position != undefined)
             this.currentTilt = this.invertPercentage(this.entityObj.attributes.current_tilt_position);
-        else
-            this.currentTilt = 0;
+            
         this._hass = hass;
     }
 

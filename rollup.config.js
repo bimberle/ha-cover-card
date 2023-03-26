@@ -39,9 +39,9 @@ if (process.env.release) {
   let repoRoot = pkg.repository.url
     .replace("https://github.com", "https://raw.githubusercontent.com")
     .replace(/.git$/, "");
-  repoRoot += "/";
+  //repoRoot += "/";
 
-  sourcemapPathTransform = file => repoRoot + "v" + pkg.version + file.substr(2);
+  sourcemapPathTransform = file => repoRoot + "/main" + file.substr(2);
 }
 
 export default {
