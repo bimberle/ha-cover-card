@@ -27,7 +27,7 @@ export class HaCoverCard extends LitElement {
     private currentTilt: number = 0;
 
     @property({ attribute: false })
-    private addSteps: boolean = true;
+    private addSteps?: boolean;
 
     @property({ attribute: false })
     private steps: number = 10;
@@ -56,7 +56,6 @@ export class HaCoverCard extends LitElement {
         this.entityObj = hass.states[this.entity];
         
         this.currentTilt = 0;
-        this.addSteps = true;
         if(this.entityObj.attributes.current_tilt_position != undefined)
             this.currentTilt = Math.round(this.entityObj.attributes.current_tilt_position/10)*10;
             
@@ -70,6 +69,7 @@ export class HaCoverCard extends LitElement {
     setConfig(config: ICardConfig): void {
         this.entity = config.entity;
         this.cardTitle = config.title || this.cardTitle;
+        this.addSteps = true;
         if(config.steps)
             this.steps = config.steps;
     }
