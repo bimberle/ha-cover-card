@@ -57,7 +57,7 @@ export class HaCoverCard extends LitElement {
         
         this.currentTilt = 0;
         if(this.entityObj.attributes.current_tilt_position != undefined)
-            this.currentTilt = Math.round(this.invertPercentage(this.entityObj.attributes.current_tilt_position)/10)*10;
+            this.currentTilt = Math.round(this.entityObj.attributes.current_tilt_position/10)*10;
             
         this._hass = hass;
     }
@@ -82,8 +82,8 @@ export class HaCoverCard extends LitElement {
                 <state-badge .stateObj="${this.entityObj}"></state-badge>
                 <div class="name truncate">
                     ${this.entityObj.attributes.friendly_name}
-                    <div class="secondary">${this.invertPercentage(this.entityObj.attributes.current_position)}% 
-                    / ${this.invertPercentage(this.entityObj.attributes.current_tilt_position)}%</div>
+                    <div class="secondary">${this.entityObj.attributes.current_position}% 
+                    / ${this.entityObj.attributes.current_tilt_position}%</div>
                 </div>
                 <div class="state">
                     <ha-icon @click=${() => this.setTilt()} class="clickIcon" icon="mdi:cached"></ha-icon>
@@ -117,10 +117,8 @@ export class HaCoverCard extends LitElement {
     }
 
     private setTilt() {
-        // Invert Position
         var nextTilt = 0;
-        console.log("Current Tilt %d", this.currentTilt);
-        this.currentTilt = Math.round(this.invertPercentage(this.entityObj.attributes.current_tilt_position)/10)*10;
+        this.currentTilt = Math.round(this.entityObj.attributes.current_tilt_position/10)*10;
 
         if(this.addSteps)
             nextTilt = this.currentTilt + this.steps;
@@ -129,20 +127,14 @@ export class HaCoverCard extends LitElement {
 
         if(nextTilt > 100)
             nextTilt = 100 - this.steps;
-            this.addSteps = true;
+            this.addSteps = false;
         if(nextTilt < 0)
             nextTilt = 0 + this.steps;
-            this.addSteps = false;
+            this.addSteps = true;
         
-        
-
-        console.log("Set position %d", nextTilt);
         this._hass.callService("cover","set_cover_tilt_position",{entity_id:this.entityObj.entity_id, tilt_position:nextTilt});
     }
 
-    private invertPercentage(perc: number) {
-        return 100-perc;
-    }
 
     protected shouldUpdate(changedProps: PropertyValues): boolean {
         if (changedProps.has("fileList")) {
