@@ -57,7 +57,7 @@ export class HaCoverCard extends LitElement {
         
         this.currentTilt = 0;
         if(this.entityObj.attributes.current_tilt_position != undefined)
-            this.currentTilt = this.invertPercentage(this.entityObj.attributes.current_tilt_position);
+            this.currentTilt = Math.round(this.invertPercentage(this.entityObj.attributes.current_tilt_position)/10)*10;
             
         this._hass = hass;
     }
@@ -120,19 +120,21 @@ export class HaCoverCard extends LitElement {
         // Invert Position
         var nextTilt = 0;
         console.log("Current Tilt %d", this.currentTilt);
-
-        if(this.currentTilt == 100)
-            this.addSteps = false;
-
-        if(this.currentTilt == 0)
-            this.addSteps = true;
+        this.currentTilt = Math.round(this.invertPercentage(this.entityObj.attributes.current_tilt_position)/10)*10;
 
         if(this.addSteps)
             nextTilt = this.currentTilt + this.steps;
         else
             nextTilt = this.currentTilt - this.steps;
+
+        if(this.currentTilt > 100)
+            nextTilt = 100 - this.steps;
+            this.addSteps = true;
+        if(this.currentTilt < 0)
+            nextTilt = 0 + this.steps;
+            this.addSteps = false;
         
-            nextTilt = this.invertPercentage(nextTilt);
+        
 
         console.log("Set position %d", nextTilt);
         this._hass.callService("cover","set_cover_tilt_position",{entity_id:this.entityObj.entity_id, tilt_position:nextTilt});
