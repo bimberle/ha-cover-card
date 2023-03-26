@@ -131,6 +131,8 @@ export class HaCoverCard extends LitElement {
             nextTilt = this.currentTilt + this.steps;
         else
             nextTilt = this.currentTilt - this.steps;
+        
+            nextTilt = this.invertPercentage(nextTilt);
 
         console.log("Set position %d", nextTilt);
         this._hass.callService("cover","set_cover_tilt_position",{entity_id:this.entityObj.entity_id, tilt_position:nextTilt});
