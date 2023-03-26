@@ -127,10 +127,10 @@ export class HaCoverCard extends LitElement {
         else
             nextTilt = this.currentTilt - this.steps;
 
-        if(this.currentTilt > 100)
+        if(nextTilt > 100)
             nextTilt = 100 - this.steps;
             this.addSteps = true;
-        if(this.currentTilt < 0)
+        if(nextTilt < 0)
             nextTilt = 0 + this.steps;
             this.addSteps = false;
         
