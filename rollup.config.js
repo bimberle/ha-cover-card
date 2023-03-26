@@ -18,7 +18,7 @@ const plugins = [
   }),
   copy({
     targets: [
-      { src: 'src/custom-element/ha-cover-card.ts', dest: '/Volumes/dockerfiles/configs/hass-config/www/custom_ui/src/custom-element/' },
+      //{ src: 'src/custom-element/ha-cover-card.ts', dest: '/Volumes/dockerfiles/configs/hass-config/www/custom_ui/src/custom-element/' },
       { src: 'dist/*', dest: '/Volumes/dockerfiles/configs/hass-config/www/custom_ui/' }
     ]
   })

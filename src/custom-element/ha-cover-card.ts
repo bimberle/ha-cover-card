@@ -121,10 +121,10 @@ export class HaCoverCard extends LitElement {
         var nextTilt = 0;
         console.log("Current Tilt %d", this.currentTilt);
 
-        if(this.currentTilt = 100)
+        if(this.currentTilt == 100)
             this.addSteps = false;
 
-        if(this.currentTilt = 0)
+        if(this.currentTilt == 0)
             this.addSteps = true;
 
         if(this.addSteps)
