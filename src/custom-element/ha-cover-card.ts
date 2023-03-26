@@ -126,12 +126,16 @@ export class HaCoverCard extends LitElement {
         else
             nextTilt = this.currentTilt - this.steps;
 
-        if(nextTilt > 100)
+        if(nextTilt > 100) {
             nextTilt = 100 - this.steps;
             this.addSteps = false;
-        if(nextTilt < 0)
+        }
+            
+        if(nextTilt < 0) {
             nextTilt = 0 + this.steps;
             this.addSteps = true;
+        }
+            
         
         this._hass.callService("cover","set_cover_tilt_position",{entity_id:this.entityObj.entity_id, tilt_position:nextTilt});
     }
