@@ -56,6 +56,7 @@ export class HaCoverCard extends LitElement {
         this.entityObj = hass.states[this.entity];
         
         this.currentTilt = 0;
+        this.addSteps = true;
         if(this.entityObj.attributes.current_tilt_position != undefined)
             this.currentTilt = Math.round(this.entityObj.attributes.current_tilt_position/10)*10;
             
